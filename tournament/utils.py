@@ -53,7 +53,6 @@ class Tournament:
             print('\rframe %d' % t, end='\r')
 
             state.update()
-            print(state.soccer.goal_line)
             list_actions = []
             ball = state.soccer.ball
             for i, p in enumerate(self.active_players):
@@ -111,5 +110,4 @@ def world_to_screen(player, dest):
     view = np.array(player.camera.view).T
     p = proj @ view @ np.array(list(dest) + [1])
     screen =  np.array([p[0] / p[-1], - p[1] / p[-1]])
-
     return screen
