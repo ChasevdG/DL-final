@@ -55,7 +55,7 @@ class Tournament:
             state.update()
 
             list_actions = []
-            ball = state.soccer.soccerball
+            ball = state.soccer.ball
             for i, p in enumerate(self.active_players):
                 player = state.players[i]
                 image = np.array(self.k.render_data[i].image)
