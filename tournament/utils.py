@@ -80,8 +80,8 @@ class Tournament:
                 output = save + '_player%02d.mp4' % i
                 subprocess.call(['ffmpeg', '-y', '-framerate', '10', '-i', dest + '_%05d.png', output])
         if hasattr(state, 'soccer'):
-            return state.soccer.score #, state.players[0], state.soccer
-        return state.soccer_score #, state.players[0], state.soccer
+            return state.soccer.score, state.players[0], state.soccer
+        return state.soccer_score, state.players[0], state.soccer
 
     def close(self):
         self.k.stop()
