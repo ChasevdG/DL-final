@@ -55,6 +55,7 @@ class Tournament:
             state.update()
 
             list_actions = []
+            ball = state.soccer.soccerball
             for i, p in enumerate(self.active_players):
                 player = state.players[i]
                 image = np.array(self.k.render_data[i].image)
@@ -68,7 +69,21 @@ class Tournament:
 
                 if save is not None:
                     PIL.Image.fromarray(image).save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
-
+                    ##################################################
+                    #      Add attributes to save here (I think)     #
+                    ##################################################
+                    fov = player.camera.fov
+                    kart = player.kart
+                    rot = kart.rotation
+                    ball_loc = ball.location
+                    kart_loc = kart.location
+                    ##?????
+                    # if(np.arcsin(ball_loc-kart_loc,rot)>fov):
+                    #    ball_on_screen = False
+                    #else:
+                    #    ball_on_screen = True
+                    
+                    
             s = self.k.step(list_actions)
             if not s:  # Game over
                 break
@@ -80,8 +95,8 @@ class Tournament:
                 output = save + '_player%02d.mp4' % i
                 subprocess.call(['ffmpeg', '-y', '-framerate', '10', '-i', dest + '_%05d.png', output])
         if hasattr(state, 'soccer'):
-            return state.soccer.score, state.players[0], state.soccer
-        return state.soccer_score, state.players[0], state.soccer
+            return state.soccer.score#, state.players[0], state.soccer
+        return state.soccer_score#, state.players[0], state.soccer
 
     def close(self):
         self.k.stop()
