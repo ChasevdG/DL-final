@@ -53,9 +53,9 @@ class Tournament:
             print('\rframe %d' % t, end='\r')
 
             state.update()
-
+            print(state.soccer.goal_line)
             list_actions = []
-            ball = state.soccer.soccerball
+            ball = state.soccer.ball
             for i, p in enumerate(self.active_players):
                 player = state.players[i]
                 image = np.array(self.k.render_data[i].image)
@@ -66,22 +66,25 @@ class Tournament:
                     setattr(action, a, player_action[a])
                 
                 list_actions.append(action)
+                # project ball onto the screen
+                ball_loc_screen = world_to_screen(player, ball.location)
+                # true if the ball is in view of this player
+                ball_in_view = -1 < ball_loc_screen[0] < 1 and -1 < ball_loc_screen[1] < 1
 
                 if save is not None:
-                    PIL.Image.fromarray(image).save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
-                    ##################################################
-                    #      Add attributes to save here (I think)     #
-                    ##################################################
-                    fov = player.camera.fov
-                    kart = player.kart
-                    rot = kart.rotation
-                    ball_loc = ball.location
-                    kart_loc = kart.location
-                    ##?????
-                    # if(np.arcsin(ball_loc-kart_loc,rot)>fov):
-                    #    ball_on_screen = False
-                    #else:
-                    #    ball_on_screen = True
+                    im = PIL.Image.fromarray(image)
+                    
+                    # draw the ball on image, remove during data collection
+                    if ball_in_view:
+                        from PIL import ImageDraw
+                        H, W = image.shape[0], image.shape[1]
+                        draw = ImageDraw.Draw(im)
+                        ball_loc_image = ball_loc_screen
+                        ball_loc_image[0] = ball_loc_image[0] * (W/2) + W/2
+                        ball_loc_image[1] = ball_loc_image[1] * (H/2) + H/2
+                        draw.ellipse((ball_loc_image[0]-10, ball_loc_image[-1]-10, 
+                  	         ball_loc_image[0]+10, ball_loc_image[-1]+10), outline='blue')
+                    im.save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
                     
                     
             s = self.k.step(list_actions)
@@ -101,3 +104,12 @@ class Tournament:
     def close(self):
         self.k.stop()
         del self.k
+
+# convert world coordinate to screen coordinate with range = ([-1,1],[-1,1])
+def world_to_screen(player, dest):
+    proj = np.array(player.camera.projection).T
+    view = np.array(player.camera.view).T
+    p = proj @ view @ np.array(list(dest) + [1])
+    screen =  np.array([p[0] / p[-1], - p[1] / p[-1]])
+
+    return screen
