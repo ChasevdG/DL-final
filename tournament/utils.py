@@ -69,6 +69,7 @@ class Tournament:
                 ball_loc_screen = world_to_screen(player, ball.location)
                 # true if the ball is in view of this player
                 ball_in_view = -1 < ball_loc_screen[0] < 1 and -1 < ball_loc_screen[1] < 1
+                mag_dist = np.norm(player.location - ball.location)
 
                 if save is not None:
                     im = PIL.Image.fromarray(image)
@@ -83,7 +84,10 @@ class Tournament:
                         ball_loc_image[1] = ball_loc_image[1] * (H/2) + H/2
                         draw.ellipse((ball_loc_image[0]-10, ball_loc_image[-1]-10, 
                   	         ball_loc_image[0]+10, ball_loc_image[-1]+10), outline='blue')
-                    im.save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
+                        im.save(os.path.join(save, '/with_Ball/player%02d_%05d.png' % (i, t)))
+                        np.savetxt(os.path.join(save, '/with_Ball/ball%02d_%05d.txt' % (i, t), np.array([ball_loc_screen,mag_dis])))
+                    else:
+                        im.save(os.path.join(save, '/without_Ball/player%02d_%05d.png' % (i, t)))
                     
                     
             s = self.k.step(list_actions)
