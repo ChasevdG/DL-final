@@ -60,6 +60,29 @@ def train_ball_loc(args):
                   (epoch))
         print(aim[0],pred[0])
         save_model(model)
+        
+    opt = torch.optim.Adam(model.dist_classifier.parameters(), lr=args.learning_rate, weight_decay=1e-5)    
+    for epoch in range(args.num_epoch):
+        model.dist_classifier.train()    
+        for img, _, dist in train_data:
+            img, dist = img.to(device), aim.to(device)
+
+            size_w, _ = aim.max(dim=1, keepdim=True)
+
+            pred = model(img)
+            # Continuous version of focal loss
+            det_loss_val = (aim_loss(pred,dist)).mean()
+            loss_val = det_loss_val
+            
+            if train_logger is not None and global_step % 100 == 0:
+                log(train_logger, img, gt_det, det, global_step)
+
+            if train_logger is not None:
+                train_logger.add_scalar('loss', loss_val, global_step)
+            optimizer.zero_grad()
+            loss_val.backward()
+            optimizer.step()
+            global_step += 1
 
 def log(logger, img, label, pred, global_step):
     """
