@@ -48,6 +48,12 @@ class Tournament:
             import os
             if not os.path.exists(save):
                 os.makedirs(save)
+            save_ball = os.path.join(save,'with_Ball')
+            if not os.path.exists(save_ball):
+                os.makedirs(save_ball)
+            save_no_ball = os.path.join(save,'without_Ball')
+            if not os.path.exists(save_no_ball):
+                os.makedirs(save_no_ball)
 
         for t in range(max_frames):
             print('\rframe %d' % t, end='\r')
@@ -69,25 +75,29 @@ class Tournament:
                 ball_loc_screen = world_to_screen(player, ball.location)
                 # true if the ball is in view of this player
                 ball_in_view = -1 < ball_loc_screen[0] < 1 and -1 < ball_loc_screen[1] < 1
-                mag_dist = np.norm(player.location - ball.location)
+                ball_distance = np.linalg.norm(np.array(player.kart.location) - np.array((ball.location)))
 
                 if save is not None:
+                    PIL.Image.fromarray(image).save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
                     im = PIL.Image.fromarray(image)
                     
                     # draw the ball on image, remove during data collection
                     if ball_in_view:
-                        from PIL import ImageDraw
-                        H, W = image.shape[0], image.shape[1]
-                        draw = ImageDraw.Draw(im)
-                        ball_loc_image = ball_loc_screen
-                        ball_loc_image[0] = ball_loc_image[0] * (W/2) + W/2
-                        ball_loc_image[1] = ball_loc_image[1] * (H/2) + H/2
-                        draw.ellipse((ball_loc_image[0]-10, ball_loc_image[-1]-10, 
-                  	         ball_loc_image[0]+10, ball_loc_image[-1]+10), outline='blue')
-                        im.save(os.path.join(save, '/with_Ball/player%02d_%05d.png' % (i, t)))
-                        np.savetxt(os.path.join(save, '/with_Ball/ball%02d_%05d.txt' % (i, t), np.array([ball_loc_screen,mag_dis])))
+                        # from PIL import ImageDraw
+                        # H, W = image.shape[0], image.shape[1]
+                        # draw = ImageDraw.Draw(im)
+                        # ball_loc_image = ball_loc_screen
+                        # ball_loc_image[0] = ball_loc_image[0] * (W/2) + W/2
+                        # ball_loc_image[1] = ball_loc_image[1] * (H/2) + H/2
+                        # draw.ellipse((ball_loc_image[0]-10, ball_loc_image[-1]-10, 
+                  	     #     ball_loc_image[0]+10, ball_loc_image[-1]+10), outline='blue')
+                        fn = os.path.join(save_ball, 'player%02d_%05d.png' % (i, t))
+                        im.save(fn)
+
+                        with open(fn + '.csv', 'w') as f:
+                            f.write('%0.1f,%0.1f,%0.1f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
                     else:
-                        im.save(os.path.join(save, '/without_Ball/player%02d_%05d.png' % (i, t)))
+                        im.save(os.path.join(save_no_ball, 'player%02d_%05d.png' % (i, t)))
                     
                     
             s = self.k.step(list_actions)
