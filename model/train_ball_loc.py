@@ -35,8 +35,9 @@ def train(args):
     for epoch in range(args.num_epoch):
         model.train()
 
-        for img, aim in train_data:
-            print(aim)
+        for d in train_data:
+            print(d)
+            
             img, aim= img.to(device), aim.to(device)
 
             size_w, _ = aim.max(dim=1, keepdim=True)
