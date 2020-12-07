@@ -18,6 +18,8 @@ class SuperTuxDataset(Dataset):
         for f in glob(path.join(dataset_path, '*.csv')):
             i = Image.open(f.replace('.csv', ''))
             i.load()
+            labels = np.loadtxt(f, dtype=np.float32, delimiter=',')
+            print(labels)
             self.data.append((i, np.loadtxt(f, dtype=np.float32, delimiter=',')))
         self.transform = transform
 
