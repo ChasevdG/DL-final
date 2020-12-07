@@ -36,14 +36,13 @@ def train(args):
         model.train()
 
         for img, aim in train_data:
-            print(img,aim)
             aim = torch.tensor(np.asarray(aim))
             img, aim= img.to(device), aim.to(device)
 
             size_w, _ = aim.max(dim=1, keepdim=True)
 
-            pred = model(img)
-            print(pred)
+            pred,_ = model(img)
+            
             # Continuous version of focal loss
             det_loss_val = (aim_loss(pred,aim)).mean()
             loss_val = det_loss_val
