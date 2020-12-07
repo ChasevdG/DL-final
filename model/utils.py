@@ -19,7 +19,6 @@ class SuperTuxDataset(Dataset):
             i = Image.open(f.replace('.csv', ''))
             i.load()
             labels = np.loadtxt(f, dtype=np.float32, delimiter=',')
-            print(labels)
             self.data.append((i, np.loadtxt(f, dtype=np.float32, delimiter=',')))
         self.transform = transform
 
@@ -27,8 +26,10 @@ class SuperTuxDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
+        print('getting item')
         data = self.data[idx]
         data = self.transform(*data)
+        print(data)
         return data
 
 
