@@ -29,7 +29,6 @@ class SuperTuxDataset(Dataset):
         print('getting item')
         data = self.data[idx]
         data = self.transform(*data)
-        print(data)
         return data
     
 class DistDataset(Dataset):
