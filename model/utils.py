@@ -26,7 +26,6 @@ class SuperTuxDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        print('getting item')
         data = self.data[idx]
         data = self.transform(*data)
         return data
