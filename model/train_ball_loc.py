@@ -60,7 +60,7 @@ def train(args):
         if valid_logger is None or train_logger is None:
             print('epoch %-3d' %
                   (epoch))
-        print(aim[0],pred[0])
+        print(epoch, loss_val)
         save_model(model)
         
     opt = torch.optim.Adam(model.dist_classifier.parameters(), lr=args.learning_rate, weight_decay=1e-5)    
