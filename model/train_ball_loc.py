@@ -27,7 +27,7 @@ def train(args):
 
     import inspect
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
-    train_data = load_data('data/with_ball', num_workers=4, transform=transform)
+    train_data = load_data('data/with_Ball', num_workers=4, transform=transform)
     
     aim_loss = torch.nn.MSELoss(reduction='none')
 
