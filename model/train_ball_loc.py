@@ -27,7 +27,7 @@ def train(args):
 
     import inspect
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
-    train_data = load_data('data/with_Ball', num_workers=4, transform=transform)
+    train_data = load_data('data/with_Ball', num_workers=1, transform=transform)
     
     aim_loss = torch.nn.MSELoss(reduction='none')
 
@@ -35,8 +35,8 @@ def train(args):
     for epoch in range(args.num_epoch):
         model.train()
 
-        for d in train_data:
-            print(d)
+        for img, aim in train_data:
+            print(img,aim)
             
             img, aim= img.to(device), aim.to(device)
 
@@ -66,7 +66,8 @@ def train(args):
     opt = torch.optim.Adam(model.dist_classifier.parameters(), lr=args.learning_rate, weight_decay=1e-5)    
     for epoch in range(args.num_epoch):
         model.dist_classifier.train()    
-        for img, _, dist in train_data:
+        for img, aim in train_data:
+            dist = aim[3]
             img, dist = img.to(device), aim.to(device)
 
             size_w, _ = aim.max(dim=1, keepdim=True)
