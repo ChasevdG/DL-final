@@ -43,6 +43,7 @@ def train(args):
             size_w, _ = aim.max(dim=1, keepdim=True)
 
             pred = model(img)
+            print(pred)
             # Continuous version of focal loss
             det_loss_val = (aim_loss(pred,aim)).mean()
             loss_val = det_loss_val
