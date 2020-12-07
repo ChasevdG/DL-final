@@ -37,7 +37,7 @@ def train(args):
 
         for img, aim in train_data:
             print(img,aim)
-            
+            aim = torch.tensor(np.asarray(aim))
             img, aim= img.to(device), aim.to(device)
 
             size_w, _ = aim.max(dim=1, keepdim=True)
