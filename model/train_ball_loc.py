@@ -5,7 +5,7 @@ import numpy as np
 from .utils import load_data
 from . import dense_transforms
 
-def train_ball_loc(args):
+def train(args):
     from os import path
     
     train_logger, valid_logger = None, None
