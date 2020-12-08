@@ -40,13 +40,10 @@ def train(args):
             aim = torch.tensor(np.asarray(aim))
             img, aim= img.to(device), aim.to(device)
 
-            size_w, _ = aim.max(dim=1, keepdim=True)
-
             pred = model(img)
             
             # Continuous version of focal loss
-            det_loss_val = (aim_loss(pred,aim)).mean()
-            loss_val = det_loss_val
+            loss_val = (aim_loss(pred,aim)).mean()
             
             if train_logger is not None and global_step % 100 == 0:
                 log(train_logger, img, gt_det, det, global_step)
