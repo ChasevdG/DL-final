@@ -58,6 +58,7 @@ class On_Screen_Dataset(Dataset):
         from glob import glob
         from os import path
         self.data = []
+        print('Loading Data') 
         w_path = dataset_path + '/with_Ball'
         for f in glob(path.join(w_path, '*.csv')):
             i = Image.open(f.replace('.csv', ''))
@@ -69,6 +70,7 @@ class On_Screen_Dataset(Dataset):
             i = Image.open(f)
             i.load()
             self.data.append((i, 0))
+        print('Finished Loading Data') 
         self.transform = transform
 
     def __len__(self):
