@@ -27,7 +27,7 @@ def train(args):
 
     import inspect
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(transforms) if inspect.isclass(v)})
-    train_data = load_on_screen_data('data', num_workers=1, transform=transform,batch_size=16)
+    train_data = load_on_screen_data('data', num_workers=1, transform=transform,batch_size=64)
     
     aim_loss = torch.nn.CrossEntropyLoss(reduction='none')
 
