@@ -13,7 +13,7 @@ class On_Screen_Classifier(torch.nn.Module):
         self.dropout = nn.Dropout()
         self.pool = torch.nn.MaxPool2d(2, 2)
 
-        self.fc1 = torch.nn.Linear(64 * 13 * 13, 128)
+        self.fc1 = torch.nn.Linear(446976, 128)
         self.fc2 = torch.nn.Linear(128, 32)
         self.fc3 = torch.nn.Linear(32, 6)
 
