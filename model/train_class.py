@@ -33,6 +33,7 @@ def train(args):
 
     global_step = 0
     for epoch in range(args.num_epoch):
+        print('Epoch: ', epoch)
         model.train()
 
         for img, aim in train_data:
