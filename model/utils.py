@@ -69,7 +69,6 @@ class On_Screen_Dataset(Dataset):
             i = Image.open(f)
             i.load()
             self.data.append((i, 0))
-            print('Loading without Ball Data')
         print('Finished Loading Data') 
         self.transform = transform
 
