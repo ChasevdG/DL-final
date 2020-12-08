@@ -78,7 +78,7 @@ class On_Screen_Dataset(Dataset):
 
     def __getitem__(self, idx):
         data = self.data[idx]
-        data = self.transform(*data)
+        data = self.transform(*data[0])
         return data
 
 def load_data(dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(), num_workers=0, batch_size=128):
