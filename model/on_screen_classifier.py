@@ -74,20 +74,10 @@ class Planner(torch.nn.Module):
             # Add all the information required for skip connections
             up_activation.append(z)
             z = self._modules['conv%d' % i](z)
-
-        for i in reversed(range(self.n_conv)):
-            z = self._modules['upconv%d' % i](z)
-            # Fix the padding
-            z = z[:, :, :up_activation[i].size(2), :up_activation[i].size(3)]
-            # Add the skip connection
-            if self.use_skip:
-                z = torch.cat([z, up_activation[i]], dim=1)
                 
         out = self.classifier(z)
-        dist = self.dist_classifier(z)
         
-        out = spatial_argmax(out[:,0,:,:])
-        return out, dist
+        return out
 
 
 def save_model(model):
