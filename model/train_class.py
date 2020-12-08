@@ -39,11 +39,11 @@ def train(args):
         for img, aim in train_data:
             aim = torch.tensor(np.asarray(aim))
             img, aim= img.to(device), aim.to(device)
-
             pred = model(img)
             pred = pred[:,0]
             # Continuous version of focal loss
             print(pred.dtype, aim.dtype) 
+            pred, aim = pred.type(torch.FloatTensor).to(device), pred.type(torch.FloatTensor).to(device)
             loss_val = (aim_loss(pred,aim)).mean()
             
             if train_logger is not None and global_step % 100 == 0:
