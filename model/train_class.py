@@ -18,7 +18,7 @@ def train(args):
     """
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    model = Planner().to(device)
+    model = On_Screen_Classifier().to(device)
     if args.continue_training:
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'det.th')))
 
