@@ -15,7 +15,7 @@ class On_Screen_Classifier(torch.nn.Module):
 
         self.fc1 = torch.nn.Linear(446976, 128)
         self.fc2 = torch.nn.Linear(128, 32)
-        self.fc3 = torch.nn.Linear(32, 2)
+        self.fc3 = torch.nn.Linear(32, 1)
 
         self.relu = torch.nn.ReLU()
         self.flatten = torch.nn.Flatten()
@@ -29,7 +29,7 @@ class On_Screen_Classifier(torch.nn.Module):
 
         x = self.flatten(x)
         x = self.relu(self.dropout(self.fc1(x)))
-        x = self.softmax(self.fc3(self.dropout(self.relu(self.fc2(x)))))
+        x = self.fc3(self.dropout(self.relu(self.fc2(x))))
         
         return x
 
