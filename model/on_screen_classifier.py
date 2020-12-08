@@ -36,7 +36,7 @@ class On_Screen_Classifier(torch.nn.Module):
 def save_model(model):
     from torch import save
     from os import path
-    if isinstance(model, Planner):
+    if isinstance(model, On_Screen_Classifier):
         return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'planner.th'))
     raise ValueError("model type '%s' not supported!" % str(type(model)))
 
