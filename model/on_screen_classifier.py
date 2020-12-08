@@ -28,7 +28,7 @@ class On_Screen_Classifier(torch.nn.Module):
 
         x = self.flatten(x)
         x = self.relu(self.dropout(self.fc1(x)))
-        x = self.relu(self.fc3(self.dropout(self.relu(self.fc2(x)))))
+        x = self.fc3(self.dropout(self.relu(self.fc2(x))))
 
         return x
 
