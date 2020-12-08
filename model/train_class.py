@@ -3,7 +3,7 @@ import torch
 import torch.utils.tensorboard as tb
 import numpy as np
 from .utils import load_on_screen_data
-from . import dense_transforms
+from torchvision import transforms
 
 def train(args):
     from os import path
@@ -26,7 +26,7 @@ def train(args):
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
 
     import inspect
-    transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
+    transform = eval(args.transform, {k: v for k, v in inspect.getmembers(transforms) if inspect.isclass(v)})
     train_data = load_on_screen_data('data', num_workers=4, transform=transform)
     
     aim_loss = torch.nn.CrossEntropyLoss(reduction='none')
