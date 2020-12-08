@@ -62,14 +62,12 @@ class On_Screen_Dataset(Dataset):
         for f in glob(path.join(w_path, '*.csv')):
             i = Image.open(f.replace('.csv', ''))
             i.load()
-            labels = np.loadtxt(f, dtype=np.float32, delimiter=',')
             self.data.append((i, 1))
         
         wo_path = dataset_path + '/without_Ball'
         for f in glob(path.join(wo_path, '*.png')):
             i = Image.open(f)
             i.load()
-            labels = np.loadtxt(f, dtype=np.float32, delimiter=',')
             self.data.append((i, 0))
         self.transform = transform
 
