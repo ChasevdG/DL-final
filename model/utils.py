@@ -47,7 +47,6 @@ class DistDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        print('getting item')
         data = self.data[idx]
         data = self.transform(*data)
         return data
@@ -78,7 +77,6 @@ class On_Screen_Dataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        print('getting item')
         data = self.data[idx]
         data = self.transform(*data)
         return data
