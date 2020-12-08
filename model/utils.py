@@ -52,6 +52,35 @@ class DistDataset(Dataset):
         data = self.transform(*data)
         return data
 
+class On_ScreenDataset(Dataset):
+    def __init__(self, dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor()):
+        from PIL import Image
+        from glob import glob
+        from os import path
+        self.data = []
+        path = dataset_path + '/with_Ball'
+        for f in glob(path.join(path, '*.csv')):
+            i = Image.open(f.replace('.csv', ''))
+            i.load()
+            labels = np.loadtxt(f, dtype=np.float32, delimiter=',')
+            self.data.append((i, 1))
+        
+        path = dataset_path + '/without_Ball'
+        for f in glob(path.join(path, '*.png')):
+            i = Image.open(f)
+            i.load()
+            labels = np.loadtxt(f, dtype=np.float32, delimiter=',')
+            self.data.append((i, 0))
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        print('getting item')
+        data = self.data[idx]
+        data = self.transform(*data)
+        return data
 
 def load_data(dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(), num_workers=0, batch_size=128):
     dataset = SuperTuxDataset(dataset_path, transform=transform)
