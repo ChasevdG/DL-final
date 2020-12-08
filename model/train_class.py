@@ -41,12 +41,9 @@ def train(args):
             img, aim= img.to(device), aim.to(device)
 
             pred = model(img)
-            print(aim)
-            onehot = (0,0)
-            onehot[aim] = 1
             
             # Continuous version of focal loss
-            loss_val = (aim_loss(pred,onehot)).mean()
+            loss_val = (aim_loss(pred,aim)).mean()
             
             if train_logger is not None and global_step % 100 == 0:
                 log(train_logger, img, gt_det, det, global_step)
