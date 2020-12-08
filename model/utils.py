@@ -52,7 +52,7 @@ class DistDataset(Dataset):
         data = self.transform(*data)
         return data
 
-class On_ScreenDataset(Dataset):
+class On_Screen_Dataset(Dataset):
     def __init__(self, dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor()):
         from PIL import Image
         from glob import glob
@@ -88,4 +88,8 @@ def load_data(dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(), 
 
 def load_dist_data(dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(), num_workers=0, batch_size=128):
     dataset = DistDataset(dataset_path, transform=transform)
+    return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True)
+
+def load_on_screen_data(dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(), num_workers=0, batch_size=128):
+    dataset = On_Screen_Dataset(dataset_path, transform=transform)
     return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True)
