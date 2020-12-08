@@ -64,12 +64,13 @@ class On_Screen_Dataset(Dataset):
             i = Image.open(f.replace('.csv', ''))
             i.load()
             self.data.append((i, 1))
-        
+        print('Finished Loading with Ball Data') 
         wo_path = dataset_path + '/without_Ball'
         for f in glob(path.join(wo_path, '*.png')):
             i = Image.open(f)
             i.load()
             self.data.append((i, 0))
+            print('Loading without Ball Data')
         print('Finished Loading Data') 
         self.transform = transform
 
