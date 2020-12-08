@@ -1,8 +1,8 @@
-from .planner import Planner, save_model 
+from .on_screen_classifier import On_Screen_Classifier, save_model 
 import torch
 import torch.utils.tensorboard as tb
 import numpy as np
-from .utils import load_data, load_dist_data
+from .utils import load_on_screen_data
 from . import dense_transforms
 
 def train(args):
@@ -27,7 +27,7 @@ def train(args):
 
     import inspect
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
-    train_data = load_data('data/with_Ball', num_workers=4, transform=transform)
+    train_data = load_on_screen_data('data', num_workers=4, transform=transform)
     
     aim_loss = torch.nn.CrossEntropyLoss(reduction='none')
 
