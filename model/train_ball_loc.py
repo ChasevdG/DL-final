@@ -27,7 +27,7 @@ def train(args):
 
     import inspect
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
-    train_data = load_data('data/with_Ball', num_workers=1, transform=transform)
+    train_data = load_data('data/with_Ball', num_workers=4, transform=transform)
     
     aim_loss = torch.nn.MSELoss(reduction='none')
 
@@ -61,18 +61,22 @@ def train(args):
             print('epoch %-3d' %
                   (epoch))
         print(epoch, loss_val)
+        print(pred,aim)
         save_model(model)
         
-    opt = torch.optim.Adam(model.dist_classifier.parameters(), lr=args.learning_rate, weight_decay=1e-5)    
+    opt = torch.optim.Adam(model.dist_classifier.parameters(), lr=args.learning_rate, weight_decay=1e-5)
+    transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
+    dist_data = load_dist_data('data/with_Ball', num_workers=4, transform=transform)
+    
     for epoch in range(args.num_epoch):
         model.dist_classifier.train()    
         for img, aim in train_data:
-            dist = aim[3]
-            img, dist = img.to(device), aim.to(device)
+            
+            img, aim = img.to(device), aim.to(device)
 
             size_w, _ = aim.max(dim=1, keepdim=True)
 
-            pred = model(img)
+            _, pred = model(img)
             # Continuous version of focal loss
             det_loss_val = (aim_loss(pred,dist)).mean()
             loss_val = det_loss_val
@@ -82,10 +86,11 @@ def train(args):
 
             if train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
-            optimizer.zero_grad()
+            opt.zero_grad()
             loss_val.backward()
-            optimizer.step()
+            opt.step()
             global_step += 1
+        save_model(model)
 
 def log(logger, img, label, pred, global_step):
     """
