@@ -41,7 +41,7 @@ def train(args):
             img, aim= img.to(device), aim.to(device)
 
             pred = model(img)
-            
+            print(aim)
             onehot = (0,0)
             onehot[aim] = 1
             
