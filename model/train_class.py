@@ -41,7 +41,7 @@ def train(args):
             img, aim= img.to(device), aim.to(device)
 
             pred = model(img)
-            
+            pred = pred[:,0]
             # Continuous version of focal loss
             loss_val = (aim_loss(pred,aim)).mean()
             
