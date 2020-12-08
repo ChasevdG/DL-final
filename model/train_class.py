@@ -43,7 +43,7 @@ def train(args):
             pred = model(img)
             pred = pred[:,0]
             # Continuous version of focal loss
-            print(type(pred), type(aim)) 
+            print(torch.dtype(pred), torch.dtype(aim)) 
             loss_val = (aim_loss(pred,aim)).mean()
             
             if train_logger is not None and global_step % 100 == 0:
