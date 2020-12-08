@@ -61,7 +61,7 @@ def train(args):
             print('epoch %-3d' %
                   (epoch))
         print(epoch, loss_val)
-        print(pred,aim)
+        print(pred[0],aim[0])
         save_model(model)
         
     opt = torch.optim.Adam(model.dist_classifier.parameters(), lr=args.learning_rate, weight_decay=1e-5)
