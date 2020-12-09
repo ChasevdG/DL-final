@@ -60,14 +60,10 @@ class On_Screen_Dataset(Dataset):
         print('Loading Data') 
         w_path = dataset_path + '/with_Ball'
         for f in glob(path.join(w_path, '*.csv')):
-            i = Image.open(f.replace('.csv', ''))
-            i.load()
             self.data.append((i, 1))
         print('Finished Loading with Ball Data') 
         wo_path = dataset_path + '/without_Ball'
         for f in glob(path.join(wo_path, '*.png')):
-            i = Image.open(f)
-            i.load()
             self.data.append((i, 0))
         print('Finished Loading Data') 
         self.transform = transform
@@ -77,7 +73,13 @@ class On_Screen_Dataset(Dataset):
 
     def __getitem__(self, idx):
         data = self.data[idx]
-        data = (self.transform(data[0]),data[1])
+        f = data[0]
+        if(data[1]):
+            i = Image.open(f.replace('.csv', ''))
+        else:
+            i = Image.open(f)
+        i.load()
+        data = (self.transform(i),data[1])
         return data
 
 def load_data(dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(), num_workers=0, batch_size=128):
