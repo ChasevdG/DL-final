@@ -106,7 +106,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_dir')
     # Put custom arguments here
     parser.add_argument('-n', '--num_epoch', type=int, default=50)
-    parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)
+    parser.add_argument('-lr', '--learning_rate', type=float, default=5e-5)
     parser.add_argument('-c', '--continue_training', action='store_true')
     parser.add_argument('-t', '--transform',
                         default='Compose([ColorJitter(0.9, 0.9, 0.9, 0.1),RandomHorizontalFlip(), ToTensor()])')
