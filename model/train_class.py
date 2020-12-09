@@ -43,7 +43,6 @@ def train(args):
             pred = pred[:,0]
             # Continuous version of focal loss
             pred, aim = pred.type(torch.FloatTensor).to(device), aim.type(torch.FloatTensor).to(device)
-            print(pred[0],aim[0])
             loss_val = (aim_loss(pred,aim)).mean()
             
             if train_logger is not None and global_step % 100 == 0:
@@ -89,7 +88,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_dir')
     # Put custom arguments here
     parser.add_argument('-n', '--num_epoch', type=int, default=50)
-    parser.add_argument('-lr', '--learning_rate', type=float, default=1e-4)
+    parser.add_argument('-lr', '--learning_rate', type=float, default=5e-4)
     parser.add_argument('-c', '--continue_training', action='store_true')
     parser.add_argument('-t', '--transform',
                         default='Compose([ColorJitter(0.9, 0.9, 0.9, 0.1),RandomHorizontalFlip(), ToTensor()])')
