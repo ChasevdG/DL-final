@@ -21,58 +21,63 @@ class Tournament:
     def __init__(self, players, screen_width=400, screen_height=300, track='icy_soccer_field'):
         assert Tournament._singleton is None, "Cannot create more than one Tournament object"
         Tournament._singleton = self
-
+        # Set up the configuration of the rendering engine ([ONCE] per process)
         self.graphics_config = pystk.GraphicsConfig.hd()
         self.graphics_config.screen_width = screen_width
         self.graphics_config.screen_height = screen_height
         pystk.init(self.graphics_config)
-
+        # Set up the configuration of the race
         self.race_config = pystk.RaceConfig(num_kart=len(players), track=track, mode=pystk.RaceConfig.RaceMode.SOCCER)
         self.race_config.players.pop()
-        
+        # Set up the player
         self.active_players = []
         for p in players:
             if p is not None:
                 self.race_config.players.append(p.config)
                 self.active_players.append(p)
-        
+        # Set up a race based on previous set configuration
         self.k = pystk.Race(self.race_config)
-
+        # Start the race
         self.k.start()
         self.k.step()
 
     def play(self, save=None, max_frames=50):
         state = pystk.WorldState()
+        # print('worldstate: {}'.format(state))
         if save is not None:
             import PIL.Image
             import os
             if not os.path.exists(save):
                 os.makedirs(save)
-            save_ball = os.path.join(save,'with_Ball')
+            save_ball = os.path.join(save, 'with_Ball')
             if not os.path.exists(save_ball):
                 os.makedirs(save_ball)
-            save_no_ball = os.path.join(save,'without_Ball')
+            save_no_ball = os.path.join(save, 'without_Ball')
             if not os.path.exists(save_no_ball):
                 os.makedirs(save_no_ball)
 
         for t in range(max_frames):
             print('\rframe %d' % t, end='\r')
-
+            # For each frame, update the WorldState
             state.update()
             list_actions = []
             ball = state.soccer.ball
+            # print('Ball information -- id: {0}, 3D-location: {1}, size: {2}'.format(ball.id, ball.location, ball.size))
             for i, p in enumerate(self.active_players):
                 player = state.players[i]
                 image = np.array(self.k.render_data[i].image)
                 
                 action = pystk.Action()
                 player_action = p(image, player)
+                # print('player_action -- acc:{0}, brake:{1}, drift:{2}, steer:{3}'.format(
+                #     player_action['acceleration'], player_action['brake'], player_action['drift'], player_action['steer']))
                 for a in player_action:
                     setattr(action, a, player_action[a])
                 
                 list_actions.append(action)
                 # project ball onto the screen
                 ball_loc_screen = world_to_screen(player, ball.location)
+                # print('Ball Location Screen: {}'.format(ball_loc_screen))
                 # true if the ball is in view of this player
                 ball_in_view = -1 < ball_loc_screen[0] < 1 and -1 < ball_loc_screen[1] < 1
                 ball_distance = np.linalg.norm(np.array(player.kart.location) - np.array((ball.location)))
@@ -83,14 +88,15 @@ class Tournament:
                     
                     # draw the ball on image, remove during data collection
                     if ball_in_view:
-                        # from PIL import ImageDraw
-                        # H, W = image.shape[0], image.shape[1]
-                        # draw = ImageDraw.Draw(im)
-                        # ball_loc_image = ball_loc_screen
-                        # ball_loc_image[0] = ball_loc_image[0] * (W/2) + W/2
-                        # ball_loc_image[1] = ball_loc_image[1] * (H/2) + H/2
-                        # draw.ellipse((ball_loc_image[0]-10, ball_loc_image[-1]-10, 
-                  	     #     ball_loc_image[0]+10, ball_loc_image[-1]+10), outline='blue')
+                        from PIL import ImageDraw
+                        H, W = image.shape[0], image.shape[1]
+                        draw = ImageDraw.Draw(im)
+                        ball_loc_image = ball_loc_screen
+                        ball_loc_image[0] = ball_loc_image[0] * (W/2) + W/2
+                        ball_loc_image[1] = ball_loc_image[1] * (H/2) + H/2
+                        draw.ellipse(
+                            (ball_loc_image[0]-10, ball_loc_image[-1]-10,
+                                ball_loc_image[0]+10, ball_loc_image[-1]+10), outline='red')
                         fn = os.path.join(save_ball, 'player%02d_%05d.png' % (i, t))
                         im.save(fn)
 
@@ -98,8 +104,7 @@ class Tournament:
                             f.write('%0.1f,%0.1f,%0.1f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
                     else:
                         im.save(os.path.join(save_no_ball, 'player%02d_%05d.png' % (i, t)))
-                    
-                    
+            # Take a step with an action per agent
             s = self.k.step(list_actions)
             if not s:  # Game over
                 break
@@ -118,10 +123,11 @@ class Tournament:
         self.k.stop()
         del self.k
 
+
 # convert world coordinate to screen coordinate with range = ([-1,1],[-1,1])
 def world_to_screen(player, dest):
     proj = np.array(player.camera.projection).T
     view = np.array(player.camera.view).T
     p = proj @ view @ np.array(list(dest) + [1])
-    screen =  np.array([p[0] / p[-1], - p[1] / p[-1]])
+    screen = np.array([p[0] / p[-1], - p[1] / p[-1]])
     return screen
