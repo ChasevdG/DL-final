@@ -42,7 +42,6 @@ def train(args):
             pred = model(img)
             pred = pred[:,0]
             # Continuous version of focal loss
-            print(pred.dtype, aim.dtype) 
             pred, aim = pred.type(torch.FloatTensor).to(device), pred.type(torch.FloatTensor).to(device)
             loss_val = (aim_loss(pred,aim)).mean()
             
