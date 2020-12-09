@@ -41,6 +41,7 @@ def train(args):
         acc = 0
         tot_acc = 0
         i=0
+        num_zeros = 0
         
         for img, aim in train_data:
             aim = torch.tensor(np.asarray(aim))
@@ -61,9 +62,13 @@ def train(args):
             optimizer.step()
             global_step += 1
             i+=1
+            zer = torch.zeros(len(pred))
+            num_zeros += accuracy(zer,aim)
             tot_acc += accuracy(pred,aim)
         acc = tot_acc/i
-        print(acc)
+        num_zero = num_zeros/i
+        print("Accuracy: ", acc)
+        print("Zero ratio: ", num_zeros)
 
         if valid_logger is None or train_logger is None:
             print('epoch %-3d' %
@@ -98,7 +103,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_dir')
     # Put custom arguments here
     parser.add_argument('-n', '--num_epoch', type=int, default=50)
-    parser.add_argument('-lr', '--learning_rate', type=float, default=1e-4)
+    parser.add_argument('-lr', '--learning_rate', type=float, default=1e-5)
     parser.add_argument('-c', '--continue_training', action='store_true')
     parser.add_argument('-t', '--transform',
                         default='Compose([ColorJitter(0.9, 0.9, 0.9, 0.1),RandomHorizontalFlip(), ToTensor()])')
