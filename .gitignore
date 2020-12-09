@@ -134,3 +134,6 @@ dmypy.json
 # images and videos
 *.png
 *.mp4
+
+# models
+*.th

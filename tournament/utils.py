@@ -41,7 +41,7 @@ class Tournament:
         self.k.start()
         self.k.step()
 
-    def play(self, save=None, max_frames=50):
+    def play(self, save=None, max_frames=50, visualize=False):
         state = pystk.WorldState()
         if save is not None:
             import PIL.Image
@@ -66,7 +66,7 @@ class Tournament:
                 image = np.array(self.k.render_data[i].image)
                 
                 action = pystk.Action()
-                player_action = p(image, player)
+                player_action, classifier,detector = p(image, player)
                 for a in player_action:
                     setattr(action, a, player_action[a])
                 
@@ -78,19 +78,21 @@ class Tournament:
                 ball_distance = np.linalg.norm(np.array(player.kart.location) - np.array((ball.location)))
 
                 if save is not None:
-                    PIL.Image.fromarray(image).save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
                     im = PIL.Image.fromarray(image)
-                    
+                    if visualize:
+                        ball_in_view = classifier
+                        ball_loc_screen = detector
                     # draw the ball on image, remove during data collection
                     if ball_in_view:
-                        # from PIL import ImageDraw
-                        # H, W = image.shape[0], image.shape[1]
-                        # draw = ImageDraw.Draw(im)
-                        # ball_loc_image = ball_loc_screen
-                        # ball_loc_image[0] = ball_loc_image[0] * (W/2) + W/2
-                        # ball_loc_image[1] = ball_loc_image[1] * (H/2) + H/2
-                        # draw.ellipse((ball_loc_image[0]-10, ball_loc_image[-1]-10, 
-                  	     #     ball_loc_image[0]+10, ball_loc_image[-1]+10), outline='blue')
+                        if visualize:
+                            from PIL import ImageDraw
+                            H, W = image.shape[0], image.shape[1]
+                            draw = ImageDraw.Draw(im)
+                            ball_loc_image = ball_loc_screen
+                            ball_loc_image[0] = ball_loc_image[0] * (W/2) + W/2
+                            ball_loc_image[1] = ball_loc_image[1] * (H/2) + H/2
+                            draw.ellipse((ball_loc_image[0]-10, ball_loc_image[-1]-10, 
+                      	         ball_loc_image[0]+10, ball_loc_image[-1]+10), outline='blue')
                         fn = os.path.join(save_ball, 'player%02d_%05d.png' % (i, t))
                         im.save(fn)
 
@@ -98,6 +100,7 @@ class Tournament:
                             f.write('%0.1f,%0.1f,%0.1f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
                     else:
                         im.save(os.path.join(save_no_ball, 'player%02d_%05d.png' % (i, t)))
+                    im.save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
                     
                     
             s = self.k.step(list_actions)

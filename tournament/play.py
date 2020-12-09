@@ -17,7 +17,7 @@ class DummyPlayer:
             team=self.team)
     
     def __call__(self, image, player_info):
-        return dict()
+        return dict(), 0, [0,0]
 
 
 if __name__ == '__main__':
@@ -25,6 +25,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--save_loc', help="Do you want to record?")
     parser.add_argument('-f', '--num_frames', default=1000, type=int, help="How many steps should we play for?")
     parser.add_argument('players', nargs='+', help="Add any number of players. List python module names or `AI` for AI players). Teams alternate.")
+    parser.add_argument('--v', action='store_true')
     args = parser.parse_args()
     
     players = []
@@ -35,6 +36,6 @@ if __name__ == '__main__':
             players.append(Player(importlib.import_module(player).HockeyPlayer(i), i % 2))
         
     tournament = Tournament(players)
-    score = tournament.play(save=args.save_loc, max_frames=args.num_frames)
+    score = tournament.play(save=args.save_loc, max_frames=args.num_frames,visualize=args.v)
     tournament.close()
     print('Final score', score)
