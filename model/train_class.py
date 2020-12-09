@@ -37,7 +37,11 @@ def train(args):
     for epoch in range(args.num_epoch):
         print('Epoch: ', epoch)
         model.train()
-
+        
+        acc = 0
+        tot_acc = 0
+        i=0
+        
         for img, aim in train_data:
             aim = torch.tensor(np.asarray(aim))
             img, aim= img.to(device), aim.to(device)
@@ -56,7 +60,10 @@ def train(args):
             loss_val.backward()
             optimizer.step()
             global_step += 1
-            acc = accuracy(pred,aim)
+            i+=1
+            tot_acc = accuracy(pred,aim)
+        acc = tot_acc/i
+        print(acc)
 
         if valid_logger is None or train_logger is None:
             print('epoch %-3d' %
