@@ -32,7 +32,6 @@ class On_Screen_Classifier(torch.nn.Module):
         x = self.fc3(self.dropout(self.relu(self.fc2(x))))
         #x = self.relu(self.fc1(x))
         #x = self.fc3(self.relu(self.fc2(x)))
-        x = self.softmax(x)
         return x
 
 
