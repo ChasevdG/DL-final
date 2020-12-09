@@ -64,7 +64,7 @@ def train(args):
             i+=1
             zer = torch.zeros(len(pred),2)
             zer[:,0] = 1
-            num_zeros += accuracy(zer,aim)
+            num_zeros += accuracy(zer,pred)
             tot_acc += accuracy(pred,aim)
         acc = tot_acc/i
         num_zeros = num_zeros/i
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_dir')
     # Put custom arguments here
     parser.add_argument('-n', '--num_epoch', type=int, default=50)
-    parser.add_argument('-lr', '--learning_rate', type=float, default=1e-5)
+    parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)
     parser.add_argument('-c', '--continue_training', action='store_true')
     parser.add_argument('-t', '--transform',
                         default='Compose([ColorJitter(0.9, 0.9, 0.9, 0.1),RandomHorizontalFlip(), ToTensor()])')
