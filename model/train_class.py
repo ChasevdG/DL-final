@@ -4,6 +4,8 @@ import torch.utils.tensorboard as tb
 import numpy as np
 from .utils import load_on_screen_data
 from torchvision import transforms
+from .utils import accuracy
+
 
 def train(args):
     from os import path
@@ -29,7 +31,7 @@ def train(args):
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(transforms) if inspect.isclass(v)})
     train_data = load_on_screen_data('data', num_workers=1, transform=transform,batch_size=64)
     
-    aim_loss = torch.nn.MSELoss(reduction='none')
+    aim_loss = torch.nn.CrossEntropyLoss(reduction='none')
 
     global_step = 0
     for epoch in range(args.num_epoch):
@@ -40,7 +42,7 @@ def train(args):
             aim = torch.tensor(np.asarray(aim))
             img, aim= img.to(device), aim.to(device)
             pred = model(img)
-            pred = pred[:,0]
+            #pred = pred[:,0]
             # Continuous version of focal loss
             pred, aim = pred.type(torch.FloatTensor).to(device), aim.type(torch.FloatTensor).to(device)
             loss_val = (aim_loss(pred,aim)).mean()
@@ -54,6 +56,7 @@ def train(args):
             loss_val.backward()
             optimizer.step()
             global_step += 1
+            acc = accuracy(pred,aim)
 
         if valid_logger is None or train_logger is None:
             print('epoch %-3d' %
