@@ -61,7 +61,7 @@ def train(args):
             optimizer.step()
             global_step += 1
             i+=1
-            tot_acc = accuracy(pred,aim)
+            tot_acc += accuracy(pred,aim)
         acc = tot_acc/i
         print(acc)
 
