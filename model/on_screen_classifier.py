@@ -73,9 +73,9 @@ class ResNet(nn.Module):
         self.layer4 = self.make_layer(ResidualBlock, 256, 1, stride=2)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout()
-        # self.fc1 = nn.Linear(55296, 256)
-        # self.fc2 = nn.Linear(256, num_classes)
-        self.fc1 = nn.Linear(4096, num_classes)
+        self.fc1 = nn.Linear(27648, 128)
+        self.fc2 = nn.Linear(128, num_classes)
+        # self.fc1 = nn.Linear(27648, num_classes)
 
     def make_layer(self, block, channels, num_blocks, stride):
         strides = [stride] + [1] * (num_blocks - 1)   # strides=[1,1]
@@ -95,8 +95,8 @@ class ResNet(nn.Module):
         out = F.avg_pool2d(out, 4)
         print(out.shape)
         out = out.view(out.size(0), -1)
-        # out = self.fc2(self.dropout(self.relu(self.fc1(out))))
-        out = self.fc1(out)
+        out = self.fc2(self.dropout(self.relu(self.fc1(out))))
+        # out = self.fc1(out)
         return out
 
 

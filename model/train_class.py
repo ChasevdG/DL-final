@@ -177,7 +177,7 @@ if __name__ == '__main__':
     parser.add_argument('-lr', '--learning_rate', type=float, default=5e-5)
     parser.add_argument('-c', '--continue_training', action='store_true')
     parser.add_argument('-t', '--transform',
-                        default='Compose([Resize((128,128)), ColorJitter(0.9, 0.9, 0.9, 0.1),RandomHorizontalFlip(), ToTensor()])')
+                        default='Compose([ColorJitter(0.9, 0.9, 0.9, 0.1),RandomHorizontalFlip(), ToTensor()])')
     parser.add_argument('-w', '--size-weight', type=float, default=0.01)
     parser.add_argument('-m', '--model', type=str, default='cnn')
     parser.add_argument('-b', '--batch', type=int, default=64, help="Batchsize, default: 64")
@@ -185,3 +185,5 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     train(args)
+
+    # Resize((128,128)), 
