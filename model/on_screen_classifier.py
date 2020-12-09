@@ -15,7 +15,7 @@ class On_Screen_Classifier(torch.nn.Module):
 
         self.fc1 = torch.nn.Linear(446976, 128)
         self.fc2 = torch.nn.Linear(128, 32)
-        self.fc3 = torch.nn.Linear(32, 1)
+        self.fc3 = torch.nn.Linear(32, 2)
 
         self.relu = torch.nn.ReLU()
         self.flatten = torch.nn.Flatten()
