@@ -19,7 +19,7 @@ class On_Screen_Classifier(torch.nn.Module):
 
         self.relu = torch.nn.ReLU()
         self.flatten = torch.nn.Flatten()
-        self.softmax = nn.Softmax()
+        self.softmax = nn.Softmax(dim=1)
 
 
     def forward(self, x):
