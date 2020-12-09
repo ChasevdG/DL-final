@@ -67,7 +67,7 @@ def train(args):
             num_zeros += accuracy(zer,aim)
             tot_acc += accuracy(pred,aim)
         acc = tot_acc/i
-        num_zero = num_zeros/i
+        num_zeros = num_zeros/i
         print("Accuracy: ", acc)
         print("Zero ratio: ", num_zeros)
 
