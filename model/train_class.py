@@ -63,7 +63,7 @@ def train(args):
             global_step += 1
             i+=1
             zer = torch.zeros(len(pred),2)
-            zero[:,0] = 1
+            zer[:,0] = 1
             num_zeros += accuracy(zer,aim)
             tot_acc += accuracy(pred,aim)
         acc = tot_acc/i
