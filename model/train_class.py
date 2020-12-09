@@ -64,7 +64,8 @@ def train(args):
             i+=1
             zer = torch.zeros(len(pred),2)
             zer[:,0] = 1
-            num_zeros += accuracy(zer,pred)
+            out = pred.max(1)[1].type_as(aim)
+            num_zeros += accuracy(zer,out)
             tot_acc += accuracy(pred,aim)
         acc = tot_acc/i
         num_zeros = num_zeros/i
@@ -75,6 +76,7 @@ def train(args):
             print('epoch %-3d' %
                   (epoch))
         print(epoch, loss_val)
+        
         print(pred[0],aim[0])
         save_model(model)
 
