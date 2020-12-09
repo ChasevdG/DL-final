@@ -4,6 +4,7 @@ import pystk
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms.functional as TF
 from . import dense_transforms
+from PIL import Image
 
 RESCUE_TIMEOUT = 30
 TRACK_OFFSET = 15
