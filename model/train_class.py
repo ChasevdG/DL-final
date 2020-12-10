@@ -1,4 +1,4 @@
-from .on_screen_classifier import On_Screen_Classifier, save_model 
+from .classifier import Classifier, save_model 
 import torch
 import torch.utils.tensorboard as tb
 import numpy as np
@@ -20,7 +20,7 @@ def train(args):
     """
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    model = On_Screen_Classifier().to(device)
+    model = Classifier().to(device)
     if args.continue_training:
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'det.th')))
 
