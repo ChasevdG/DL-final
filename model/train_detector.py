@@ -1,4 +1,4 @@
-from .planner import Planner, save_model 
+from .detector import Detector, save_model 
 import torch
 import torch.utils.tensorboard as tb
 import numpy as np
@@ -18,7 +18,7 @@ def train(args):
     """
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    model = Planner().to(device)
+    model = Detector().to(device)
     if args.continue_training:
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'det.th')))
 
@@ -38,8 +38,6 @@ def train(args):
         for img, aim in train_data:
             aim = torch.tensor(np.asarray(aim))
             img, aim= img.to(device), aim.to(device)
-
-            size_w, _ = aim.max(dim=1, keepdim=True)
 
             pred,_ = model(img)
             
