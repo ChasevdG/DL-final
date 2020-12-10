@@ -70,20 +70,25 @@ class Tournament:
                 for a in player_action:
                     setattr(action, a, player_action[a])
                 
+                # add noise to AI, for data collection
+                # if t % 20 == 0:
+                #     action.steer = np.random.uniform(-1,1)
                 list_actions.append(action)
                 # project ball onto the screen
-                ball_loc_screen = world_to_screen(player, ball.location)
+                ball_loc_screen, in_front = world_to_screen(player, ball.location)
                 # true if the ball is in view of this player
-                ball_in_view = -1 < ball_loc_screen[0] < 1 and -1 < ball_loc_screen[1] < 1
+                ball_in_view = -1 < ball_loc_screen[0] < 1 and -1 < ball_loc_screen[1] < 1 and in_front
                 ball_distance = np.linalg.norm(np.array(player.kart.location) - np.array((ball.location)))
+   
 
                 if save is not None:
                     im = PIL.Image.fromarray(image)
                     if visualize:
                         ball_in_view = classifier
                         ball_loc_screen = detector
-                    # draw the ball on image, remove during data collection
+                
                     if ball_in_view:
+                        # draw the ball on image
                         if visualize:
                             from PIL import ImageDraw
                             H, W = image.shape[0], image.shape[1]
@@ -97,9 +102,12 @@ class Tournament:
                         im.save(fn)
 
                         with open(fn + '.csv', 'w') as f:
-                            f.write('%0.1f,%0.1f,%0.1f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
+                            f.write('%0.3f,%0.3f,%0.3f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
                     else:
-                        im.save(os.path.join(save_no_ball, 'player%02d_%05d.png' % (i, t)))
+                        fn = os.path.join(save_no_ball, 'player%02d_%05d.png' % (i, t))
+                        im.save(fn)
+                        with open(fn + '.csv', 'w') as f:
+                            f.write('%0.3f,%0.3f,%0.3f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
                     im.save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
                     
                     
@@ -127,4 +135,11 @@ def world_to_screen(player, dest):
     view = np.array(player.camera.view).T
     p = proj @ view @ np.array(list(dest) + [1])
     screen =  np.array([p[0] / p[-1], - p[1] / p[-1]])
-    return screen
+    return screen, p[-1] > 0
+
+# def ball_in_goal(location):
+#     if 
+#     our_goal = ([-10.45, 0.07, -64.5], [10.45, 0.07, -64.5])
+#                 our_mid_goal = [0, 0.07, -64.5]
+#                 enemy_goal = ([10.45, 0.07, 64.5], [-10.51, 0.07, 64.5])
+#                 enemy_mid_goal = [0, 0.07, 64.5]
