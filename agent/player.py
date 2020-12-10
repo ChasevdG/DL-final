@@ -43,6 +43,7 @@ class HockeyPlayer:
         self.kart = "tux"
         self.player_id = player_id
         self.our_goal, self.our_mid_goal, self.enemy_goal, self.enemy_mid_goal = get_goal(self.player_id)
+        self.last_ball_screen = [0,0];
 
         # load model
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -50,8 +51,39 @@ class HockeyPlayer:
         self.detector = load_detector().to(self.device)
         self.classifier.eval()
         self.detector.eval()
-        
+    
+    
+
     def act(self, image, player_info):
+        def world_to_screen(player, dest):
+            proj = np.array(player.camera.projection).T
+            view = np.array(player.camera.view).T
+            p = proj @ view @ np.array(list(dest) + [1])
+            screen =  np.array([p[0] / p[-1], - p[1] / p[-1]])
+            return screen, p[-1] > 0
+
+        def to_world(aim_point, player, height=0):
+            proj = np.array(player.camera.projection).T
+            view = np.array(player.camera.view).T
+            pv_inv = np.linalg.pinv(proj @ view)
+            xy, d = pv_inv.dot([aim_point[0],-aim_point[1],0,1]), pv_inv[:, 2]
+            x0, x1 = xy[:-1] / xy[-1], (xy+d)[:-1] / (xy+d)[-1]
+            t = (height-x0[1]) / (x1[1] - x0[1])
+            if t < 1e-3 or t > 10:
+                # Project the point forward by a certain distance, if it would end up behind
+                t = 10
+            return t * x1 + (1-t) * x0
+
+        def ball_in_front(ball_distance, ball_screen):
+            return ball_distance<7 and abs(ball_screen[0]) < 0.15
+
+        def hit_ball(ball_screen, player, enemy_mid_goal):
+            goal_screen, _ = world_to_screen(player, enemy_mid_goal)
+            return ball_screen[0] - goal_screen[0]
+
+        def clip_steer(steer):
+            return min(max(steer, -1), 1)
+
         """
         Set the action given the current image
         :param image: numpy array of shape (300, 400, 3)
@@ -62,18 +94,25 @@ class HockeyPlayer:
         """
         Your code here.
         """
-        ball_in_view = self.classifier(TF.to_tensor(image)[None].to(self.device)).cpu().tolist()
-        x,y = (0,0)
-        if ball_in_view[0][0] < ball_in_view[0][1]:
-            loc, distance = self.detector(TF.to_tensor(image)[None].to(self.device))
-            x,y = loc.cpu().squeeze();
+        ball_on_screen = self.classifier(TF.to_tensor(image)[None].to(self.device)).cpu().tolist()
+        if ball_on_screen[0][0] < ball_on_screen[0][1]:
+            o, _ = self.detector(TF.to_tensor(image)[None].to(self.device))
+            ball_screen = o.cpu().squeeze().detach().numpy();
+            self.last_ball_screen = ball_screen
+            ball_world = to_world(ball_screen, player_info)
+            # print(ball_world)
+            ball_distance = min(np.linalg.norm(np.array(player_info.kart.location) - np.array(ball_world)),30)
+            # print(ball_distance)
             action['acceleration'] = 1
-            action['steer'] = min(max(x*3, -1), 1)
+            if ball_in_front(ball_distance, ball_screen):
+                action['steer'] = clip_steer(hit_ball(ball_screen, player_info, self.enemy_mid_goal))
+            else:
+                action['steer'] = clip_steer(ball_screen[0]*3)
         else:
             action['acceleration'] = 0
             action['brake'] = True
-            action['steer'] = -1
+            action['steer'] = clip_steer(-3*self.last_ball_screen[0])
 
-        return action, ball_in_view[0][0] < ball_in_view[0][1], [x,y]
+        return action, ball_on_screen[0][0] < ball_on_screen[0][1], self.last_ball_screen
 
    
