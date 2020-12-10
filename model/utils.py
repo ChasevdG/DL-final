@@ -1,6 +1,7 @@
 import numpy as np
 import pystk
 
+import torch
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms.functional as TF
 from . import dense_transforms
@@ -94,6 +95,11 @@ def load_dist_data(dataset_path=DATASET_PATH, transform=dense_transforms.ToTenso
 def load_on_screen_data(dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(), num_workers=0, batch_size=128):
     dataset = On_Screen_Dataset(dataset_path, transform=transform)
     return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True)
+
+def load_on_screen_data_split(dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(), num_workers=0, batch_size=128):
+    dataset = On_Screen_Dataset(dataset_path, transform=transform)
+    train_set, val_set = torch.utils.data.random_split(dataset, [int(len(dataset)*0.8), len(dataset)-int(len(dataset)*0.8)])
+    return DataLoader(train_set, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True), DataLoader(val_set, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True)
 
 def accuracy(outputs, labels):
     outputs_idx = outputs.max(1)[1].type_as(labels)
