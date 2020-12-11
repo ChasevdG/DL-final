@@ -44,7 +44,7 @@ class HockeyPlayer:
         self.player_id = player_id
         self.our_goal, self.our_mid_goal, self.enemy_goal, self.enemy_mid_goal = get_goal(self.player_id)
         self.last_ball_screen = [0,0]
-        self.last_ball_world = [0,0]
+        self.last_ball_world = [0,0,0]
         self.last_velocity = 0
         
         self.s = 0
