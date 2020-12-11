@@ -127,7 +127,7 @@ class HockeyPlayer:
             self.s = 0
             angle = np.array(self.enemy_mid_goal - ball_world)
             angle = 1.5*angle/np.linalg.norm(angle)
-            aim = ball_world + velocity + 1/2*ball_acceleration + angle
+            aim = ball_world + angle
             
             self.last_ball_world = ball_world
             self.last_velocity = velocity
