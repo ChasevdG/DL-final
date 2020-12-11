@@ -1,4 +1,4 @@
-from .detector import Dist_Detector, save_model, load_model
+from .detector import Dist_Detector, save_dist_model, load_model
 import torch
 import torch.utils.tensorboard as tb
 import numpy as np
@@ -64,7 +64,7 @@ def train(args):
                 print(pred[0],aim[0])
         print('Epoch ', epoch)
         print(pred[0],aim[0])
-        save_model(model)
+        save_dist_model(model)
 
 def log(logger, img, label, pred, global_step):
     """
