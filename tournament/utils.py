@@ -84,6 +84,18 @@ class Tournament:
                 if save is not None:
                     im = PIL.Image.fromarray(image)
                     if visualize:
+                        # wrong prediction
+                        if classifier != -1 and ball_in_view != classifier:
+                            if ball_in_view:
+                                fn = os.path.join(save_ball, 'player%02d_%05d.png' % (i, t))
+                                im.save(fn)
+                                with open(fn + '.csv', 'w') as f:
+                                    f.write('%0.3f,%0.3f,%0.3f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
+                            else:
+                                fn = os.path.join(save_no_ball, 'player%02d_%05d.png' % (i, t))
+                                im.save(fn)
+                        if classifier == -1:
+                            classifier = 0
                         ball_in_view = classifier
                         ball_loc_screen = detector
                 
@@ -98,16 +110,18 @@ class Tournament:
                             ball_loc_image[1] = ball_loc_image[1] * (H/2) + H/2
                             draw.ellipse((ball_loc_image[0]-10, ball_loc_image[-1]-10, 
                       	         ball_loc_image[0]+10, ball_loc_image[-1]+10), outline='blue')
-                        fn = os.path.join(save_ball, 'player%02d_%05d.png' % (i, t))
-                        im.save(fn)
+                        else:
+                            fn = os.path.join(save_ball, 'player%02d_%05d.png' % (i, t))
+                            im.save(fn)
 
-                        with open(fn + '.csv', 'w') as f:
-                            f.write('%0.3f,%0.3f,%0.3f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
+                            with open(fn + '.csv', 'w') as f:
+                                f.write('%0.3f,%0.3f,%0.3f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
                     else:
-                        fn = os.path.join(save_no_ball, 'player%02d_%05d.png' % (i, t))
-                        im.save(fn)
-                        with open(fn + '.csv', 'w') as f:
-                            f.write('%0.3f,%0.3f,%0.3f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
+                        if not visualize:
+                            fn = os.path.join(save_no_ball, 'player%02d_%05d.png' % (i, t))
+                            im.save(fn)
+                            with open(fn + '.csv', 'w') as f:
+                                f.write('%0.3f,%0.3f,%0.3f' % tuple(list(np.append(ball_loc_screen, ball_distance))))
                     im.save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
                     
                     

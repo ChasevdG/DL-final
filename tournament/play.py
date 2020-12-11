@@ -17,7 +17,7 @@ class DummyPlayer:
             team=self.team)
     
     def __call__(self, image, player_info):
-        return dict(), 0, [0,0]
+        return dict(), -1, [0,0]
 
 
 if __name__ == '__main__':
