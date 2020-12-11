@@ -89,7 +89,7 @@ class Detector(torch.nn.Module):
         out = spatial_argmax(out[:,0,:,:])
         return out, dist
         
- class Dist_Detector(torch.nn.Module):
+class Dist_Detector(torch.nn.Module):
     class Block(torch.nn.Module):
         def __init__(self, n_input, n_output, kernel_size=3, stride=2):
             super().__init__()
