@@ -80,7 +80,7 @@ class HockeyPlayer:
 
         def ball_in_front(ball_distance, ball_screen):
             # return ball_distance<7 and abs(ball_screen[0]) < 0.15
-            return True
+            return False
 
         def hit_ball(ball_screen, player, enemy_mid_goal):
             goal_screen, _ = world_to_screen(player, enemy_mid_goal)
