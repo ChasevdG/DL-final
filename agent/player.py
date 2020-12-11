@@ -44,7 +44,10 @@ class HockeyPlayer:
         self.player_id = player_id
         self.our_goal, self.our_mid_goal, self.enemy_goal, self.enemy_mid_goal = get_goal(self.player_id)
         self.last_ball_screen = [0,0]
-
+        self.last_ball_world = [0,0]
+        self.last_velocity = 0
+        
+        self.s = 0
         # load model
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.classifier = load_classifier().to(self.device)
@@ -76,7 +79,7 @@ class HockeyPlayer:
 
         def ball_in_front(ball_distance, ball_screen):
             # return ball_distance<7 and abs(ball_screen[0]) < 0.15
-            return False
+            return True
 
         def hit_ball(ball_screen, player, enemy_mid_goal):
             goal_screen, _ = world_to_screen(player, enemy_mid_goal)
@@ -102,20 +105,38 @@ class HockeyPlayer:
         Your code here.
         """
         ball_on_screen = self.classifier(TF.to_tensor(image)[None].to(self.device)).cpu().tolist()
+        
         if ball_on_screen[0][0] < ball_on_screen[0][1]:
+            
             o, _ = self.detector(TF.to_tensor(image)[None].to(self.device))
             ball_screen = o.cpu().squeeze().detach().numpy().tolist()
+            
             self.last_ball_screen = ball_screen
+            
             ball_world = to_world(ball_screen, player_info)
+            
+            self.s +=1
+            velocity = (ball_world - self.last_ball_world)/self.s
+            ball_acceleration = (velocity - self.last_velocity)/self.s
+            self.s = 0
+            angle = np.array(self.enemy_mid_goal - ball_world)
+            angle = 1.5*angle/np.linalg.norm(angle)
+            aim = ball_world + velocity + 1/2*ball_acceleration + angle
+            
+            self.last_ball_world = ball_world
+            self.last_velocity = velocity
+            
             # print(ball_world)
             ball_distance = min(np.linalg.norm(np.array(player_info.kart.location) - np.array(ball_world)),30)
             # print(ball_distance)
+            
             action['acceleration'] = 1
             if ball_in_front(ball_distance, ball_screen):
-                action['steer'] = clip_steer(hit_ball(ball_screen, player_info, self.enemy_mid_goal))
+                action['steer'] = clip_steer(hit_ball(aim, player_info, self.enemy_mid_goal))
             else:
                 action['steer'] = clip_steer(ball_screen[0]*5)
         else:
+            self.s+=1 
             action['acceleration'] = 0
             action['brake'] = True
             action['steer'] = -1 if self.last_ball_screen[0] > 0 else 1 
