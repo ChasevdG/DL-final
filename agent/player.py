@@ -48,6 +48,7 @@ class HockeyPlayer:
         self.last_velocity = 0
         
         self.s = 0
+        self.frame = 0
         # load model
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.classifier = load_classifier().to(self.device)
@@ -104,7 +105,11 @@ class HockeyPlayer:
         """
         Your code here.
         """
+        
         ball_on_screen = self.classifier(TF.to_tensor(image)[None].to(self.device)).cpu().tolist()
+        
+        if(self.frame < 10):
+            return action ball_on_screen[0][0] < ball_on_screen[0][1], self.last_ball_screen.copy()
         
         if ball_on_screen[0][0] < ball_on_screen[0][1]:
             
