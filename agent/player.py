@@ -109,6 +109,7 @@ class HockeyPlayer:
         ball_on_screen = self.classifier(TF.to_tensor(image)[None].to(self.device)).cpu().tolist()
         
         if(self.frame < 10):
+            self.frame+=1
             return action, ball_on_screen[0][0] < ball_on_screen[0][1], self.last_ball_screen.copy()
         
         if ball_on_screen[0][0] < ball_on_screen[0][1]:
