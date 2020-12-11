@@ -38,11 +38,12 @@ class DistDataset(Dataset):
         from glob import glob
         from os import path
         self.data = []
+        print('Loading Data')
         for f in glob(path.join(dataset_path, '*.csv')):
-            i = Image.open(f.replace('.csv', ''))
-            i.load()
+            img = f.replace('.csv', '')
             labels = np.loadtxt(f, dtype=np.float32, delimiter=',')
-            self.data.append((i, labels[2]))
+            self.data.append((img, labels[2]))
+        print('Finished Loading Data')
         self.transform = transform
 
     def __len__(self):
@@ -50,7 +51,10 @@ class DistDataset(Dataset):
 
     def __getitem__(self, idx):
         data = self.data[idx]
-        data = self.transform(*data)
+        f = data[0]
+        i = Image.open(f)
+        i.load()
+        data = (self.transform(i),data[1])
         return data
 
 class On_Screen_Dataset(Dataset):
