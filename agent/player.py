@@ -91,6 +91,12 @@ class HockeyPlayer:
         :param player_info: pystk.Player object for the current kart.
         return: Dict describing the action
         """
+        # print("========")
+        # print("world coord: "+str(self.enemy_mid_goal))
+        # test_screen, _ = world_to_screen(player_info, self.enemy_mid_goal)
+        # print("screen coord: "+str(test_screen))
+        # test_world = to_world(test_screen, player_info) 
+        # print("estimated world coord: " +str(test_world))
         action = {'acceleration': 0, 'brake': False, 'drift': False, 'nitro': False, 'rescue': False, 'steer': 0}
         """
         Your code here.
