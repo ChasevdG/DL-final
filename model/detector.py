@@ -176,11 +176,25 @@ def save_model(model):
         return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'Detector.th'))
     raise ValueError("model type '%s' not supported!" % str(type(model)))
 
+def save_dist_model(model):
+    from torch import save
+    from os import path
+    if isinstance(model, Dist_Detector):
+        return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'Depth.th'))
+    raise ValueError("model type '%s' not supported!" % str(type(model)))
+
 
 def load_model():
     from torch import load
     from os import path
     r = Detector()
+    r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'Detector.th'), map_location='cpu'))
+    return r
+
+def load_dist_model():
+    from torch import load
+    from os import path
+    r = Dist_Detector()
     r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'Detector.th'), map_location='cpu'))
     return r
 
