@@ -1,4 +1,4 @@
-from .detector import Detector, save_model, load_model
+from .detector import Dist_Detector, save_model, load_model
 import torch
 import torch.utils.tensorboard as tb
 import numpy as np
@@ -18,7 +18,7 @@ def train(args):
     """
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    model = load_model().to(device)
+    model = Dist_Detector().to(device)
     if args.continue_training:
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'det.th')))
 
@@ -46,7 +46,7 @@ def train(args):
             aim = aim.to(device)
 
             _, pred = model(img)
-            pred = pred[:,0,0,0]
+            pred = pred[:,0]
             # Continuous version of focal loss
             det_loss_val = (aim_loss(pred,aim)).mean()
             loss_val = det_loss_val
