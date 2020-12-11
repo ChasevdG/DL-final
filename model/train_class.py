@@ -1,4 +1,4 @@
-from .classifier import Classifier, save_model 
+from .classifier import Classifier, save_model, load_class
 import torch
 import torch.utils.tensorboard as tb
 import numpy as np
@@ -22,7 +22,7 @@ def train(args):
 
     model = Classifier().to(device)
     if args.continue_training:
-        model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'det.th')))
+        model = load_class().to(device)
 
     # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-5)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
