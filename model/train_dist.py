@@ -20,7 +20,7 @@ def train(args):
 
     model = Dist_Detector().to(device)
     if args.continue_training:
-        model = load_dist_model.to(device)
+        model = load_dist_model().to(device)
 
     # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-5)
 
