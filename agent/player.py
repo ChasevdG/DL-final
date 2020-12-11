@@ -43,7 +43,7 @@ class HockeyPlayer:
         self.kart = "tux"
         self.player_id = player_id
         self.our_goal, self.our_mid_goal, self.enemy_goal, self.enemy_mid_goal = get_goal(self.player_id)
-        self.last_ball_screen = [0,0];
+        self.last_ball_screen = [0,0]
 
         # load model
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -75,7 +75,8 @@ class HockeyPlayer:
             return t * x1 + (1-t) * x0
 
         def ball_in_front(ball_distance, ball_screen):
-            return ball_distance<7 and abs(ball_screen[0]) < 0.15
+            # return ball_distance<7 and abs(ball_screen[0]) < 0.15
+            return False
 
         def hit_ball(ball_screen, player, enemy_mid_goal):
             goal_screen, _ = world_to_screen(player, enemy_mid_goal)
@@ -97,7 +98,7 @@ class HockeyPlayer:
         ball_on_screen = self.classifier(TF.to_tensor(image)[None].to(self.device)).cpu().tolist()
         if ball_on_screen[0][0] < ball_on_screen[0][1]:
             o, _ = self.detector(TF.to_tensor(image)[None].to(self.device))
-            ball_screen = o.cpu().squeeze().detach().numpy();
+            ball_screen = o.cpu().squeeze().detach().numpy().tolist()
             self.last_ball_screen = ball_screen
             ball_world = to_world(ball_screen, player_info)
             # print(ball_world)
@@ -107,12 +108,14 @@ class HockeyPlayer:
             if ball_in_front(ball_distance, ball_screen):
                 action['steer'] = clip_steer(hit_ball(ball_screen, player_info, self.enemy_mid_goal))
             else:
-                action['steer'] = clip_steer(ball_screen[0]*3)
+                action['steer'] = clip_steer(ball_screen[0]*5)
         else:
             action['acceleration'] = 0
             action['brake'] = True
-            action['steer'] = clip_steer(-3*self.last_ball_screen[0])
+            action['steer'] = -1 if self.last_ball_screen[0] > 0 else 1 
+            # action['steer'] = -1
+            # action['steer'] = -1 if np.random.uniform(-1,1) > 0 else 1
 
-        return action, ball_on_screen[0][0] < ball_on_screen[0][1], self.last_ball_screen
+        return action, ball_on_screen[0][0] < ball_on_screen[0][1], self.last_ball_screen.copy()
 
    
