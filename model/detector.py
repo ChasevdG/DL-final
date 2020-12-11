@@ -124,7 +124,7 @@ class Dist_Detector(torch.nn.Module):
         self.use_skip = use_skip
         self.n_conv = len(layers)
         skip_layer_size = [3] + layers[:-1]
-         for i, l in enumerate(layers):
+        for i, l in enumerate(layers):
             self.add_module('conv%d' % i, self.Block(c, l, kernel_size, 2))
             c = l
         # Produce lower res output
