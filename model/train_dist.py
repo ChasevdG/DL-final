@@ -31,13 +31,13 @@ def train(args):
 
     global_step = 0
 
-    opt = torch.optim.Adam(model.dist_classifier.parameters(), lr=args.learning_rate, weight_decay=1e-5)
+    opt = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
 
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(transforms) if inspect.isclass(v)})
     dist_data = load_dist_data('data/with_Ball', num_workers=4, transform=transform)
     
     for epoch in range(args.num_epoch):
-        model.dist_classifier.train()    
+        model.train()    
         for img, aim in dist_data:
             aim = torch.tensor(np.asarray(aim))
             #print(len(img))
