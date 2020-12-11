@@ -42,8 +42,8 @@ class ResNet(nn.Module):
         self.layer4 = self.make_layer(ResidualBlock, 128, 1, stride=2)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout()
-        self.fc1 = nn.Linear(13824, 128)
-        self.fc2 = nn.Linear(128, num_classes)
+        self.fc1 = nn.Linear(2048, 64)
+        self.fc2 = nn.Linear(64, num_classes)
         # self.fc1 = nn.Linear(27648, num_classes)
 
     def make_layer(self, block, channels, num_blocks, stride):
@@ -109,7 +109,7 @@ def save_model(model, name=None):
     # Save model based on the naming
     if name is None:
         if isinstance(model, ResNet):
-            return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'classifier_res.th'))
+            return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'classifier_res_resize.th'))
     else:
         if isinstance(model, ResNet):
             return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), '{0}_resnet.th'.format(name)))
@@ -122,7 +122,7 @@ def load_model():
     from torch import load
     from os import path
     r = ResNet(ResidualBlock)
-    r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'classifier_res.th'), map_location='cpu'))
+    r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'classifier_res_resize.th'), map_location='cpu'))
     return r
 
 

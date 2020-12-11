@@ -1,4 +1,4 @@
-from .classifier_res import ResNet, ResidualBlock, save_model
+from .classifier_res_resize import ResNet, ResidualBlock, save_model
 import torch
 import torch.utils.tensorboard as tb
 import numpy as np
@@ -31,7 +31,8 @@ def train(args):
     import inspect
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(transforms) if inspect.isclass(v)})
     # train_data = load_on_screen_data('data', num_workers=1, transform=transform, batch_size=args.batch)
-    train_data, valid_data = load_on_screen_data_split(args.data_path, num_workers=1, transform=transform, batch_size=args.batch)
+    train_data = load_on_screen_data_split('data/All', num_workers=1, transform=transform, batch_size=args.batch)
+    valid_data = load_on_screen_data_split('data/Lite', num_workers=1, transform=transform, batch_size=args.batch)
 
     print('Size of train data: {}'.format(len(train_data)))
     print('Size of valid data: {}'.format(len(valid_data)))
